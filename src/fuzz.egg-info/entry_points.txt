@@ -1,6 +1,0 @@
-[console_scripts]
-fuzz = fuzz_entry:script_entry
-
-[fuzz_types]
-wfuzz_api = fuzz_entry:WfuzzApiCaller
-wfuzz_script = fuzz_entry:WfuzzScriptCaller
