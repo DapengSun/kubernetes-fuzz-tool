@@ -2,11 +2,14 @@
 """
 -------------------------------------------------
    Authors :       sundapeng.sdp
-   Date：          2023/3/22
+   Date：          2023/3/24
    Description :
 -------------------------------------------------
 """
 __author__ = 'sundapeng.sdp'
 
-from .wfuzz import WfuzzFactory
-from .interface import AbstractFactory
+class FuzzVars:
+    NAMESPACE = "kube-system"
+
+
+    FAKE_POD_NAME = "fake1-pod-1, fake2-pod-2"

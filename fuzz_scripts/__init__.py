@@ -7,3 +7,7 @@
 -------------------------------------------------
 """
 __author__ = 'sundapeng.sdp'
+
+from pathlib import Path
+
+base_dir = Path(__file__).absolute().parent.parent

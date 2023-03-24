@@ -8,5 +8,4 @@
 """
 __author__ = 'sundapeng.sdp'
 
-from .wfuzz_api_caller import WfuzzApiCaller
-from .wfuzz_script_caller import WfuzzScriptCaller
+from .wfuzz_factory import WfuzzFactory

@@ -11,9 +11,8 @@ __author__ = 'sundapeng.sdp'
 import optparse
 
 import pkg_resources
-from optparse import OptionParser
+from fuzz_tool_factory import AbstractFactory, WfuzzFactory
 from utils import FuzzToolException, CALLER_TYPE
-from fuzz_tool_factory import AbstractFactory, WfuzzApiCaller, WfuzzScriptCaller
 
 TARGET_URL = "target_url"
 TOOL_PARAMETERS = "tool_parameters"
@@ -45,9 +44,10 @@ def get_fuzz_tool(tool_type: str, usage: str, caller_type: CALLER_TYPE) -> Abstr
         raise FuzzToolException(NO_FUZZ_TOOL_LOADED)
 
     # get tool by type and return tool instance
-    caller_type_lower_name = caller_type.name.lower()
-    tool = tools[f"{tool_type}_{caller_type_lower_name}"]
-    return tool()
+    # caller_type_lower_name = caller_type.name.lower()
+    # tool = tools[f"{tool_type}_{caller_type_lower_name}"]
+    tool = tools[f"{tool_type}"]
+    return tool
 
 
 def script_entry(options: optparse.Values, usage: str):
@@ -58,7 +58,7 @@ def script_entry(options: optparse.Values, usage: str):
     :return:
     """
     # accept the specified parameters for script execution
-    target_url, tool_parameters, tool_type = parser_fuzz_parameters(options)
+    target_url, tool_parameters, tool_type = parser_fuzz_parameters(options, CALLER_TYPE.SCRIPT)
     call_fuzz_tool_api(target_url, tool_parameters, tool_type, usage, CALLER_TYPE.SCRIPT)
 
 
@@ -70,7 +70,7 @@ def api_caller_entry(values: dict):
     :return:
     """
     # accept the specified parameters for api caller
-    target_url, tool_parameters, tool_type = parser_fuzz_parameters(values)
+    target_url, tool_parameters, tool_type = parser_fuzz_parameters(values, CALLER_TYPE.API)
     # call fuzz tool api
     call_fuzz_tool_api(target_url, tool_parameters, tool_type, None, CALLER_TYPE.API)
 
@@ -89,18 +89,19 @@ def call_fuzz_tool_api(tool_type: str, tool_parameters: str, target_url: str, us
     tool = get_fuzz_tool(tool_type, usage, caller_type)
     if tool:
         try:
-            tool.api_caller(tool_parameters=tool_parameters, target_url=target_url)
+            tool(tool_type=tool_type, target_url=target_url).api_caller(tool_parameters=tool_parameters)
         except Exception as ex:
             raise ex
 
 
-def parser_fuzz_parameters(options):
+def parser_fuzz_parameters(options, caller_type: CALLER_TYPE):
     """ parser fuzz parameters
 
-    :param options:
+    :param options: options
+    :param caller_type: CALLER_TYPE
     :return:
     """
-    if options is optparse.Values:
+    if caller_type is CALLER_TYPE.SCRIPT:
         tool_type = options.tool_type
         tool_parameters = options.tool_parameters
         target_url = options.target_url
@@ -108,7 +109,7 @@ def parser_fuzz_parameters(options):
         tool_type = options.get("%s" % TOOL_TYPE)
         tool_parameters = options.get("%s" % TOOL_PARAMETERS)
         target_url = options.get("%s" % TARGET_URL)
-    return target_url, tool_parameters, tool_type
+    return tool_type, tool_parameters, target_url
 
 
 if __name__ == '__main__':
@@ -117,7 +118,7 @@ if __name__ == '__main__':
 
                 usage: -t wfuzz -p "-c -z file, wordlist/general/big.txt" -u https://xxxx.xxxx.xxxx
                 """
-    parser = OptionParser(usage)
+    parser = optparse.OptionParser(usage)
 
     parser.add_option("-t", "--tool_type", dest="tool_type", help="The fuzz tool name of your chosen.")
     parser.add_option("-p", "--tool_parameters", dest="tool_parameters",
