@@ -1,0 +1,6 @@
+Metadata-Version: 2.1
+Name: fuzz
+Version: 0.1.1
+Summary: The project contains a variety of fuzz tools.
+Author: sundapeng.sdp
+Classifier: Programming Language :: Python :: 3
