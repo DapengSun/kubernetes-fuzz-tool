@@ -36,8 +36,10 @@ def create_fuzz_namespace(kubernetes_base: str, kubernetes_api_base: str):
     # 发送post请求
     try:
         response = requests.post(url=request_url, json=body, headers=header, timeout=5)
+        if response.json().get("code") == 409:
+            print(response.json().get("message"))
     except Exception as ex:
-        print("namespace [fuzz-dev] resource exist")
+        print(ex)
 
 
 def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_configure: dict):
