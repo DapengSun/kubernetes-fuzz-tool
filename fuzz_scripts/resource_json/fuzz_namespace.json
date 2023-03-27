@@ -1,0 +1,10 @@
+{
+  "kind": "Namespace",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "fuzz-dev",
+    "labels": {
+      "name": "fuzz-dev"
+    }
+  }
+}

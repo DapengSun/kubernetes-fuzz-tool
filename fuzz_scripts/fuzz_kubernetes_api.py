@@ -8,19 +8,39 @@
 """
 __author__ = 'sundapeng.sdp'
 
-from kubernetes_fuzz_tool.src import api_caller_entry
+import json
+
+import requests as requests
+import yaml
 from kubernetes_fuzz_tool.fuzz_scripts import base_dir
-from kubernetes_fuzz_tool.fuzz_scripts.fuzz_kubernetes_vars import FuzzVars
 
 WFUZZ = "wfuzz"
 
 TOOL_TYPE = "tool_type"
 TOOL_PARAMETERS = "tool_parameters"
 TARGET_URL = "target_url"
-FUZZ_CODE_RANGE = "301,302,404,500,501,502"
-FUZZ_ALL_ATTACK_FILE_PATH = base_dir / "src/words/wordlist/Injections/All_attack.txt"
+FUZZ_ALL_ATTACK_FILE_PATH_NAME = "FUZZ_ALL_ATTACK_FILE_PATH"
 
-def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str):
+
+def create_fuzz_resources(kubernetes_base: str, kubernetes_api_base: str):
+    create_fuzz_namespace(kubernetes_base, kubernetes_api_base)
+
+
+def create_fuzz_namespace(kubernetes_base: str, kubernetes_api_base: str):
+    with open(base_dir / "fuzz_scripts/resource_json/fuzz_namespace.json", 'r') as load_f:
+        body = json.load(load_f)
+    request_url = f"{kubernetes_base}{kubernetes_api_base}/v1/namespaces"
+    header = {
+        "Content-Type": "application/json"
+    }
+    # 发送post请求
+    try:
+        response = requests.post(url=request_url, json=body, headers=header, timeout=5)
+    except Exception as ex:
+        print("namespace [fuzz-dev] resource exist")
+
+
+def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_configure: dict):
     """kubernetes core api
 
     ref: https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/pod-v1/
@@ -29,42 +49,15 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str):
     :return:
     """
 
-    CONNECT_DELAY = "--conn-delay 5"
-    RESPONSE_DELAY = "--req-delay 5"
+    # region pre handle: create fuzz namespace, create fuzz pods...
+    create_fuzz_resources(kubernetes_base, kubernetes_api_base)
+    # endregion
 
     # region pod
     # region pod instance
-    # region pod instance get
+    # region pod instance GET
     # GET /api/v1/namespaces/{namespace}/pods/{name}
-    print("pod instance: fuzz [name] start.")
-    options = generate_fuzz_options("%s" % WFUZZ,
-                                    f"-z list,{FuzzVars.NAMESPACE} " \
-                                    f"-z file,{FUZZ_ALL_ATTACK_FILE_PATH} " \
-                                    f"--sc {FUZZ_CODE_RANGE} " \
-                                    f"{CONNECT_DELAY} " \
-                                    f"{RESPONSE_DELAY}",
-                                    f"{kubernetes_base}{kubernetes_api_base}/v1/namespace/FUZZ/pods/FUZ2Z?pretty=true")
-    api_caller_entry(options)
-    print("pod instance: fuzz [name] finish.")
 
-    # print("pod instance: fuzz [namespace, name] start.")
-    # options = generate_fuzz_options("%s" % WFUZZ,
-    #                                 f"-z list,{FuzzVars.NAMESPACE} " \
-    #                                 f"-z list,{FuzzVars.FAKE_POD_NAME} " \
-    #                                 f"--sc {FUZZ_CODE_RANGE}",
-    #                                 f"{kubernetes_base}{kubernetes_api_base}/v1/namespace/FUZZ/pods/FUZ2Z?pretty=true")
-    # api_caller_entry(options)
-    # print("pod instance: fuzz [namespace, name] finish.")
-    #
-    # print("pod instance: fuzz [name, pretty] start.")
-    # options = generate_fuzz_options("%s" % WFUZZ,
-    #                                 f"-z list,{FuzzVars.NAMESPACE} " \
-    #                                 f"-z list,{FuzzVars.FAKE_POD_NAME} " \
-    #                                 f"--sc {FUZZ_CODE_RANGE}",
-    #                                 f"{kubernetes_base}{kubernetes_api_base}/v1/namespace/FUZZ/pods/FUZ2Z?pretty=FUZ3Z")
-    # api_caller_entry(options)
-    # print("pod instance: fuzz [name, pretty] finish.")
-    #
     # print("pod instance: fuzz [namespace, name, pretty] start.")
     # options = generate_fuzz_options("%s" % WFUZZ,
     #                                 f"-z list,{FuzzVars.NAMESPACE} " \
@@ -122,21 +115,15 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str):
     # endregion
     # endregion
 
-
-def generate_fuzz_options(tool_type: str, tool_parameters: str, target_url: str) -> dict:
-    values = {
-        ("%s" % TOOL_TYPE): tool_type,
-        ("%s" % TOOL_PARAMETERS): tool_parameters,
-        ("%s" % TARGET_URL): target_url
-    }
-    return values
+    # region pre handle: clear fuzz namespace, create fuzz pods...
+    # endregion
 
 
-def kubernetes_apis_fuzz(kubernetes_base: str, kubernetes_apis_base: str):
+def kubernetes_apis_fuzz(kubernetes_base: str, kubernetes_apis_base: str, fuzz_configure: dict):
     pass
 
 
-def kubernetes_other_fuzz():
+def kubernetes_other_fuzz(kubernetes_base: str):
     pass
 
 
@@ -145,8 +132,13 @@ if __name__ == '__main__':
     kubernetes_base = "http://192.168.75.100:8080"
     kubernetes_api_base = "/api"
     kubernetes_apis_base = "/apis"
-    kubernetes_api_fuzz(kubernetes_base, kubernetes_api_base)
-    kubernetes_apis_fuzz(kubernetes_base, kubernetes_apis_base)
+
+    fuzz_config = base_dir / "fuzz_config.yaml"
+    with open(fuzz_config) as f:
+        fuzz_configure = yaml.load(f, Loader=yaml.FullLoader)
+
+    kubernetes_api_fuzz(kubernetes_base, kubernetes_api_base, fuzz_configure)
+    kubernetes_apis_fuzz(kubernetes_base, kubernetes_apis_base, fuzz_configure)
     kubernetes_other_fuzz(kubernetes_base)
     print("fuzz kubernetes api successful.")
     print("finish.")
