@@ -8,9 +8,9 @@
 """
 __author__ = 'sundapeng.sdp'
 
-from src import api_caller_entry
-from fuzz_scripts import base_dir
-from fuzz_kubernetes_vars import FuzzVars
+from kubernetes_fuzz_tool.src import api_caller_entry
+from kubernetes_fuzz_tool.fuzz_scripts import base_dir
+from kubernetes_fuzz_tool.fuzz_scripts.fuzz_kubernetes_vars import FuzzVars
 
 WFUZZ = "wfuzz"
 
