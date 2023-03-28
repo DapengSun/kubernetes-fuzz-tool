@@ -42,10 +42,6 @@ class Pod(ResourceBase):
     def post(self):
         # POST /api/v1/namespaces/{namespace}/pods
         print("pod instance: fuzz [name] start.")
-
-        with open("/Users/sundapeng/Project/kubernetes_fuzz_tool/fuzz_scripts/resource_metadata/fuzz_pod.json", 'r') as load_f:
-            body = json.load(load_f)
-
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
                                                      f"-z list,{self.namespace} " \
                                                      f"-z file,{self.attack_file_path} " \
