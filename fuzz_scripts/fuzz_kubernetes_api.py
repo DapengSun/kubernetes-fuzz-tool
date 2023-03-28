@@ -17,6 +17,8 @@ from kubernetes_fuzz_tool.fuzz_scripts import base_dir
 from kubernetes_fuzz_tool.fuzz_scripts.fuzz_kubernetes_vars import FuzzVars
 from kubernetes_fuzz_tool.fuzz_scripts.resources.pod import Pod
 
+from fuzz_scripts.resources.persistent_volume import PersistentVolume
+
 WFUZZ = "wfuzz"
 TOOL_TYPE = "tool_type"
 TOOL_PARAMETERS = "tool_parameters"
@@ -186,6 +188,25 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     # endregion
     # endregion
     # endregion
+
+    # region persistent volume
+    # region persistent volume GET
+    persistent_volume_fuzz_obj = PersistentVolume(kubernetes_base=kubernetes_base,
+                                                  kubernetes_api_base=kubernetes_api_base,
+                                                  fuzz_configure=fuzz_configure)
+    fuzz_payload = [
+        f"-z file,{injection_file_path}"
+    ]
+    fuzz_expression = f"/v1/persistentvolumes/FUZZ"
+    persistent_volume_fuzz_obj.get(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
+    fuzz_payload = [
+        f"-z file,{general_file_path}"
+    ]
+    persistent_volume_fuzz_obj.get(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
+    # endregion
+
+    # endregion
+
 
 def kubernetes_apis_fuzz(kubernetes_base: str, kubernetes_apis_base: str, fuzz_configure: dict):
     pass
