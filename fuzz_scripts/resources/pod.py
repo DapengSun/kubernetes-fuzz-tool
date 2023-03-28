@@ -45,7 +45,7 @@ class Pod(ResourceBase):
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
                                                      f"-z file,{self.attack_file_path} " \
                                                      f'-z list,"{self.namespace}" ' \
-                                                     f'-H "Content-Type:application/json" ' \
+                                                     f'-H Content-Type:application/json ' \
                                                      f"-d '{json.dumps(self.body, ensure_ascii=False).replace(' ', '')}' " \
                                                      f"--sc {self.fuzz_code_range} " \
                                                      f"{self.connect_delay} " \
