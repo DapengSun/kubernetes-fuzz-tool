@@ -120,7 +120,7 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     fuzz_payload = [
         f"-z file,{injection_file_path}"
     ]
-    fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods?dryRun=True"
+    fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods?dryRun=All"
     pod_fuzz_obj.post(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
     fuzz_payload = [
         f"-z file,{general_file_path}"
@@ -139,7 +139,7 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
         f"-z file,{injection_file_path}",
         f"-z file,{injection_file_path}"
     ]
-    fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods/{FuzzVars.POD_NAME}?dryRun=True&fieldManager=FUZ2Z&fieldValidation=FUZ3Z&pretty=True"
+    fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods/{FuzzVars.POD_NAME}?dryRun=All&fieldManager=FUZ2Z&fieldValidation=FUZ3Z&pretty=True"
     pod_fuzz_obj.put(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
     fuzz_payload = [
         f"-z file,{injection_file_path}",
