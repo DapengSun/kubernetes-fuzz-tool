@@ -101,7 +101,7 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     pod_fuzz_obj.attack_file_path = injection_file_path
     pod_fuzz_obj.get()
 
-    pod_fuzz_obj.attack_file_path = general_file_path,
+    pod_fuzz_obj.attack_file_path = general_file_path
     pod_fuzz_obj.get()
     # endregion
 
@@ -120,7 +120,7 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     pod_fuzz_obj.attack_file_path = injection_file_path
     pod_fuzz_obj.post()
 
-    pod_fuzz_obj.attack_file_path = general_file_path,
+    pod_fuzz_obj.attack_file_path = general_file_path
     pod_fuzz_obj.post()
     # endregion
 
