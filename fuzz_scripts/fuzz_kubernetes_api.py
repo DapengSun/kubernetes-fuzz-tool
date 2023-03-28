@@ -202,10 +202,6 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     ]
     fuzz_expression = f"/v1/persistentvolumes/FUZZ"
     persistent_volume_fuzz_obj.get(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
-    fuzz_payload = [
-        f"-z file,{general_file_path}"
-    ]
-    persistent_volume_fuzz_obj.get(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
     # endregion
 
     # endregion
