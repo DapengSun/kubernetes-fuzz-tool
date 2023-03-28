@@ -17,25 +17,49 @@ from kubernetes_fuzz_tool.fuzz_scripts.fuzz_kubernetes_vars import FuzzVars
 from kubernetes_fuzz_tool.fuzz_scripts.resources.pod import Pod
 
 WFUZZ = "wfuzz"
-
 TOOL_TYPE = "tool_type"
 TOOL_PARAMETERS = "tool_parameters"
 TARGET_URL = "target_url"
 FUZZ_ALL_ATTACK_FILE_PATH_NAME = "FUZZ_ALL_ATTACK_FILE_PATH"
+APPLICATION_JSON = "application/json"
+CONTENT_TYPE = "Content-Type"
 
 
-def create_fuzz_resources(kubernetes_base: str, kubernetes_api_base: str):
-    create_fuzz_namespace(kubernetes_base, kubernetes_api_base)
+def initialize_resources(kubernetes_base: str, kubernetes_api_base: str):
+    """initialize_resources
+
+    The fuzzing api needs to initialize some resources in advance.
+    :param kubernetes_base: kubernetes base url path
+    :param kubernetes_api_base: kubernetes api base url path
+    """
+    # initialize namespace resource
+    namespace_metadata_path = base_dir / "fuzz_scripts/resource_metadata/actual_metadata/namespace.json"
+    send_request_to_initialize_resource(
+        request_url=f"{kubernetes_base}{kubernetes_api_base}/v1/namespaces",
+        header={
+            ("%s" % CONTENT_TYPE): ("%s" % APPLICATION_JSON)
+        },
+        metadata_path=namespace_metadata_path)
+
+    # initialize pod resource
+    pod_metadata_path = base_dir / "fuzz_scripts/resource_metadata/actual_metadata/pod.json"
+    send_request_to_initialize_resource(
+        request_url=f"{kubernetes_base}{kubernetes_api_base}/v1/namespaces/{FuzzVars.NAMESPACE}/pods",
+        header={
+            ("%s" % CONTENT_TYPE): ("%s" % APPLICATION_JSON)
+        },
+        metadata_path=pod_metadata_path)
 
 
-def create_fuzz_namespace(kubernetes_base: str, kubernetes_api_base: str):
-    with open(base_dir / "fuzz_scripts/resource_metadata/fuzz_namespace.json", 'r') as load_f:
+def send_request_to_initialize_resource(request_url: str, header: dict, metadata_path: str):
+    """send request
+
+    :param request_url: reqeust url
+    :param header: header
+    :param metadata_path: resource metadata file path
+    """
+    with open(metadata_path, 'r') as load_f:
         body = json.load(load_f)
-    request_url = f"{kubernetes_base}{kubernetes_api_base}/v1/namespaces"
-    header = {
-        "Content-Type": "application/json"
-    }
-    # 发送post请求
     try:
         response = requests.post(url=request_url, json=body, headers=header, timeout=5)
         if response.json().get("code") == 409:
@@ -50,26 +74,28 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     """kubernetes core api
 
     ref: https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/pod-v1/
-    :param kubernetes_base:
-    :param kubernetes_api_base:
+    :param kubernetes_base: kubernetes base url path
+    :param kubernetes_api_base: kubernetes api base url path
     :return:
     """
-    metadata_path = base_dir / "fuzz_scripts/resource_metadata"
+    actual_metadata_path = base_dir / "fuzz_scripts/resource_metadata/actual_metadata"
+    fuzz_metadata_path = base_dir / "fuzz_scripts/resource_metadata/fuzz_metadata"
     injection_file_path = base_dir / "src/words/wordlist/Injections/All_attack.txt"
     general_file_path = base_dir / "src/words/wordlist/general/big.txt"
 
-    # region pre handle: create fuzz namespace, create fuzz pods...
-    create_fuzz_resources(kubernetes_base, kubernetes_api_base)
+    # region inti resources: create fuzz namespace, create fuzz pods...
+    initialize_resources(kubernetes_base, kubernetes_api_base)
     # endregion
 
     # region pod
     # region pod instance
+
     # region pod instance GET
     # GET /api/v1/namespaces/{namespace}/pods/{name}
     # pod = Pod(kubernetes_base=kubernetes_base,
     #           kubernetes_api_base=kubernetes_api_base,
     #           fuzz_configure=fuzz_configure,
-    #           namespace=NAMESPACE)
+    #           namespace=FuzzVars.NAMESPACE)
     # pod.get()
 
     # print("pod instance: fuzz [namespace, name, pretty] start.")
@@ -84,7 +110,7 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     # endregion
 
     # region pod instance POST
-    with open(metadata_path / "fuzz_pod.json", 'r') as load_f:
+    with open(fuzz_metadata_path / "pod.json", 'r') as load_f:
         body = json.load(load_f)
 
     fuzz_configure.update({

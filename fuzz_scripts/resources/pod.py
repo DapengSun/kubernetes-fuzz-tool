@@ -28,7 +28,7 @@ class Pod(ResourceBase):
 
     def get(self):
         # GET /api/v1/namespaces/{namespace}/pods/{name}
-        print("pod instance: fuzz [name] start.")
+        print("pod instance: get method fuzzing start.")
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
                                                      f'-z list,"{self.namespace}" ' \
                                                      f"-z file,{self.attack_file_path} " \
@@ -37,11 +37,11 @@ class Pod(ResourceBase):
                                                      f"{self.response_delay}",
                                                      f"{self.kubernetes_base}{self.kubernetes_api_base}/v1/namespace/FUZZ/pods/FUZ2Z?pretty=true")
         ResourceBase.api_caller(options)
-        print("pod instance: fuzz [name] finish.")
+        print("pod instance: get method fuzzing finish.")
 
     def post(self):
         # POST /api/v1/namespaces/{namespace}/pods
-        print("pod instance: fuzz [name] start.")
+        print("pod instance: post method fuzzing start.")
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
                                                      f"-z file,{self.attack_file_path} " \
                                                      f'-H Content-Type:application/json ' \
@@ -53,7 +53,7 @@ class Pod(ResourceBase):
                                                      f"{self.kubernetes_base}{self.kubernetes_api_base}/v1/namespaces/{self.namespace}/pods?dryRun=True")
 
         ResourceBase.api_caller(options)
-        print("pod instance: fuzz [name] finish.")
+        print("pod instance: post method fuzzing finish.")
 
     def put(self):
         pass

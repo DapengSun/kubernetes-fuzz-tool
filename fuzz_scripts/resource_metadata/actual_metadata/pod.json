@@ -1,0 +1,22 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "fuzz-dev-pod",
+    "namespace": "fuzz-dev"
+  },
+  "spec": {
+    "containers": [
+      {
+        "image": "busybox",
+        "command": [
+          "sleep",
+          "3600"
+        ],
+        "imagePullPolicy": "IfNotPresent",
+        "name": "busybox"
+      }
+    ],
+    "restartPolicy": "Always"
+  }
+}
