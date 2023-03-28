@@ -40,6 +40,8 @@ def create_fuzz_namespace(kubernetes_base: str, kubernetes_api_base: str):
         response = requests.post(url=request_url, json=body, headers=header, timeout=5)
         if response.json().get("code") == 409:
             print(response.json().get("message"))
+        else:
+            print(response.json())
     except Exception as ex:
         print(ex)
 
