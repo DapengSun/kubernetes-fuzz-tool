@@ -5,4 +5,3 @@ FUZZ_CODE_RANGE:
   - 500
   - 501
   - 502
-FUZZ_ALL_ATTACK_FILE_PATH: /Users/sundapeng/Project/kubernetes_fuzz_tool/src/words/wordlist/Injections/All_attack.txt

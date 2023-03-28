@@ -53,6 +53,7 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     :return:
     """
     metadata_path = base_dir / "fuzz_scripts/resource_metadata"
+    attack_file_path = base_dir / "src/words/wordlist/Injections/All_attack.txt"
 
     # region pre handle: create fuzz namespace, create fuzz pods...
     create_fuzz_resources(kubernetes_base, kubernetes_api_base)
@@ -67,6 +68,7 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     pod = Pod(kubernetes_base=kubernetes_base,
               kubernetes_api_base=kubernetes_api_base,
               fuzz_configure=fuzz_configure,
+              attack_file_path=attack_file_path,
               namespace=FuzzVars.NAMESPACE,
               body=body)
     pod.post()

@@ -12,9 +12,11 @@ import abc
 from abc import ABC
 from kubernetes_fuzz_tool.src import api_caller_entry
 
+
 FUZZ_CONFIGURE = "fuzz_configure"
 KUBERNETES_BASE = "kubernetes_base"
 KUBERNETES_API_BASE = "kubernetes_api_base"
+ATTACK_FILE_PATH = "attack_file_path"
 FUZZ_CODE_RANGE_NAME = "FUZZ_CODE_RANGE"
 FUZZ_ALL_ATTACK_FILE_PATH_NAME = "FUZZ_ALL_ATTACK_FILE_PATH"
 
@@ -32,7 +34,7 @@ class ResourceBase(ABC):
         self._kubernetes_base = kwargs.get("%s" % KUBERNETES_BASE)
         self._kubernetes_api_base = kwargs.get("%s" % KUBERNETES_API_BASE)
         self._fuzz_configure = kwargs.get("%s" % FUZZ_CONFIGURE)
-        self._attack_file_path = self._fuzz_configure.get(FUZZ_ALL_ATTACK_FILE_PATH_NAME)
+        self._attack_file_path = kwargs.get("%s" % ATTACK_FILE_PATH)
         self._fuzz_code_range = self._fuzz_configure.get(FUZZ_CODE_RANGE_NAME)
 
     @abc.abstractmethod
