@@ -5,3 +5,5 @@ FUZZ_CODE_RANGE:
   - 500
   - 501
   - 502
+FUZZ_HIDE_CODE_RANGE:
+  - 422

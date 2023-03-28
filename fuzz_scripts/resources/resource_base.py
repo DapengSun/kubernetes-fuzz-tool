@@ -18,6 +18,7 @@ KUBERNETES_BASE = "kubernetes_base"
 KUBERNETES_API_BASE = "kubernetes_api_base"
 ATTACK_FILE_PATH = "attack_file_path"
 FUZZ_CODE_RANGE_NAME = "FUZZ_CODE_RANGE"
+FUZZ_HIDE_CODE_RANGE_NAME = "FUZZ_HIDE_CODE_RANGE"
 FUZZ_ALL_ATTACK_FILE_PATH_NAME = "FUZZ_ALL_ATTACK_FILE_PATH"
 
 TOOL_TYPE = "tool_type"
@@ -36,6 +37,7 @@ class ResourceBase(ABC):
         self._fuzz_configure = kwargs.get("%s" % FUZZ_CONFIGURE)
         self._attack_file_path = kwargs.get("%s" % ATTACK_FILE_PATH)
         self._fuzz_code_range = self._fuzz_configure.get(FUZZ_CODE_RANGE_NAME)
+        self._fuzz_hide_code_range = self._fuzz_configure.get(FUZZ_HIDE_CODE_RANGE_NAME)
 
     @abc.abstractmethod
     def get(self):
@@ -106,3 +108,7 @@ class ResourceBase(ABC):
     @property
     def fuzz_code_range(self):
         return ",".join('%s' % _ for _ in self._fuzz_code_range)
+
+    @property
+    def fuzz_hide_code_range(self):
+        return ",".join('%s' % _ for _ in self._fuzz_hide_code_range)

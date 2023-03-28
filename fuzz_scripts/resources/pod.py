@@ -47,6 +47,7 @@ class Pod(ResourceBase):
                                                      f'-H Content-Type:application/json ' \
                                                      f"-d '{json.dumps(self.body, ensure_ascii=False).replace(' ', '')}' " \
                                                      f"--sc {self.fuzz_code_range} " \
+                                                     f"--hc {self.fuzz_hide_code_range} " \
                                                      f"{self.connect_delay} " \
                                                      f"{self.response_delay}",
                                                      f"{self.kubernetes_base}{self.kubernetes_api_base}/v1/namespaces/{self.namespace}/pods?dryRun=True")

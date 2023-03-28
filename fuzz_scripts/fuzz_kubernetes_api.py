@@ -55,7 +55,8 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     :return:
     """
     metadata_path = base_dir / "fuzz_scripts/resource_metadata"
-    attack_file_path = base_dir / "src/words/wordlist/Injections/All_attack.txt"
+    injection_file_path = base_dir / "src/words/wordlist/Injections/All_attack.txt"
+    general_file_path = base_dir / "src/words/wordlist/general/big.txt"
 
     # region pre handle: create fuzz namespace, create fuzz pods...
     create_fuzz_resources(kubernetes_base, kubernetes_api_base)
@@ -67,13 +68,22 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     with open(metadata_path / "fuzz_pod.json", 'r') as load_f:
         body = json.load(load_f)
 
-    pod = Pod(kubernetes_base=kubernetes_base,
-              kubernetes_api_base=kubernetes_api_base,
-              fuzz_configure=fuzz_configure,
-              attack_file_path=attack_file_path,
-              namespace=FuzzVars.NAMESPACE,
-              body=body)
-    pod.post()
+
+    pod_fuzz_injections = Pod(kubernetes_base=kubernetes_base,
+                              kubernetes_api_base=kubernetes_api_base,
+                              fuzz_configure=fuzz_configure,
+                              attack_file_path=injection_file_path,
+                              namespace=FuzzVars.NAMESPACE,
+                              body=body)
+    pod_fuzz_injections.post()
+
+    pod_fuzz_general = Pod(kubernetes_base=kubernetes_base,
+                           kubernetes_api_base=kubernetes_api_base,
+                           fuzz_configure=fuzz_configure,
+                           attack_file_path=general_file_path,
+                           namespace=FuzzVars.NAMESPACE,
+                           body=body)
+    pod_fuzz_general.post()
     # endregion
 
     # region pod instance GET
