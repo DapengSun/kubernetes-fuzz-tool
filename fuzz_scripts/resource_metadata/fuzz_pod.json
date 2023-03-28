@@ -3,7 +3,7 @@
   "kind": "Pod",
   "metadata": {
     "name": "FUZZ",
-    "namespace": "fuzz_dev"
+    "namespace": "fuzz-dev"
   },
   "spec": {
     "containers": [

@@ -30,7 +30,7 @@ class Pod(ResourceBase):
         # GET /api/v1/namespaces/{namespace}/pods/{name}
         print("pod instance: fuzz [name] start.")
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
-                                                     f"-z list,{self.namespace} " \
+                                                     f'-z list,"{self.namespace}" ' \
                                                      f"-z file,{self.attack_file_path} " \
                                                      f"--sc {self.fuzz_code_range} " \
                                                      f"{self.connect_delay} " \
@@ -43,7 +43,7 @@ class Pod(ResourceBase):
         # POST /api/v1/namespaces/{namespace}/pods
         print("pod instance: fuzz [name] start.")
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
-                                                     f"-z list,{self.namespace} " \
+                                                     f'-z list,"{self.namespace}" ' \
                                                      f"-z file,{self.attack_file_path} " \
                                                      f'-H "Content-Type:application/json" ' \
                                                      f"-d {json.dumps(self.body, ensure_ascii=False).replace(' ', '')} " \

@@ -2,9 +2,9 @@
   "kind": "Namespace",
   "apiVersion": "v1",
   "metadata": {
-    "name": "fuzz_dev",
+    "name": "fuzz-dev",
     "labels": {
-      "name": "fuzz_dev"
+      "name": "fuzz-dev"
     }
   }
 }
