@@ -83,6 +83,10 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     injection_file_path = base_dir / "src/words/wordlist/Injections/All_attack.txt"
     general_file_path = base_dir / "src/words/wordlist/general/big.txt"
 
+    pod_body = dict()
+    with open(fuzz_metadata_path / "pod.json", 'r') as load_f:
+        pod_body = json.load(load_f)
+
     # region inti resources: create fuzz namespace, create fuzz pods...
     initialize_resources(kubernetes_base, kubernetes_api_base)
     # endregion
@@ -101,7 +105,6 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     ]
     fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods/{FuzzVars.POD_NAME}?pretty=FUZZ"
     pod_fuzz_obj.get(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
-
     fuzz_payload = [
         f"-z file,{general_file_path}"
     ]
@@ -109,29 +112,37 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     # endregion
 
     # region pod instance POST
-    with open(fuzz_metadata_path / "pod.json", 'r') as load_f:
-        body = json.load(load_f)
-
-    fuzz_configure.update({
-        "FUZZ_HIDE_CODE_RANGE": [422]
-    })
     pod_fuzz_obj = Pod(kubernetes_base=kubernetes_base,
                        kubernetes_api_base=kubernetes_api_base,
                        fuzz_configure=fuzz_configure,
-                       body=body)
+                       body=pod_body)
     fuzz_payload = [
         f"-z file,{injection_file_path}"
     ]
     fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods?dryRun=True"
     pod_fuzz_obj.post(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
-
     fuzz_payload = [
         f"-z file,{general_file_path}"
     ]
     pod_fuzz_obj.post(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
     # endregion
 
-    # region pod instance put
+    # region pod instance PUT
+    pod_fuzz_obj = Pod(kubernetes_base=kubernetes_base,
+                       kubernetes_api_base=kubernetes_api_base,
+                       fuzz_configure=fuzz_configure,
+                       body=pod_body)
+    fuzz_payload = [
+        f"-z file,{injection_file_path}",
+        f"-z file,{injection_file_path}"
+    ]
+    fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods/{FuzzVars.POD_NAME}?dryRun=True&fieldManager=FUZZ&fieldValidation=FUZ2Z&pretty=True"
+    pod_fuzz_obj.post(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
+    fuzz_payload = [
+        f"-z file,{injection_file_path}",
+        f"-z file,{injection_file_path}"
+    ]
+    pod_fuzz_obj.post(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
     # endregion
 
     # region pod instance patch
@@ -173,10 +184,6 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     # endregion
     # endregion
     # endregion
-
-    # region pre handle: clear fuzz namespace, create fuzz pods...
-    # endregion
-
 
 def kubernetes_apis_fuzz(kubernetes_base: str, kubernetes_apis_base: str, fuzz_configure: dict):
     pass
