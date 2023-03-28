@@ -8,9 +8,7 @@
 """
 __author__ = 'sundapeng.sdp'
 
-from fuzz_scripts.resources.resource_base import ResourceBase
-
-FUZZ_ALL_ATTACK_FILE_PATH_NAME = "FUZZ_ALL_ATTACK_FILE_PATH"
+from kubernetes_fuzz_tool.fuzz_scripts.resources.resource_base import ResourceBase
 
 
 class Namespace(ResourceBase):

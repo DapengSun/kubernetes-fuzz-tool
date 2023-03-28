@@ -8,7 +8,12 @@
 """
 __author__ = 'sundapeng.sdp'
 
-from fuzz_scripts.resources.resource_base import ResourceBase
+import json
+
+from kubernetes_fuzz_tool.fuzz_scripts.resources.resource_base import ResourceBase
+
+BODY = "body"
+NAMESPACE = "namespace"
 
 
 class Pod(ResourceBase):
@@ -16,21 +21,43 @@ class Pod(ResourceBase):
 
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.namespace = kwargs.get("%s" % NAMESPACE)
+        self.body = kwargs.get("%s" % BODY)
+
     def get(self):
         # GET /api/v1/namespaces/{namespace}/pods/{name}
         print("pod instance: fuzz [name] start.")
-        options = generate_fuzz_options("%s" % wfuzz,
-                                        f"-z list,{FuzzVars.NAMESPACE} " \
-                                        f"-z file,{FUZZ_ALL_ATTACK_FILE_PATH} " \
-                                        f"--sc {FUZZ_CODE_RANGE} " \
-                                        f"{CONNECT_DELAY} " \
-                                        f"{RESPONSE_DELAY}",
-                                        f"{kubernetes_base}{kubernetes_api_base}/v1/namespace/FUZZ/pods/FUZ2Z?pretty=true")
-        api_caller_entry(options)
+        options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
+                                                     f"-z list,{self.namespace} " \
+                                                     f"-z file,{self.attack_file_path} " \
+                                                     f"--sc {self.fuzz_code_range} " \
+                                                     f"{self.connect_delay} " \
+                                                     f"{self.response_delay}",
+                                                     f"{self.kubernetes_base}{self.kubernetes_api_base}/v1/namespace/FUZZ/pods/FUZ2Z?pretty=true")
+        ResourceBase.api_caller(options)
         print("pod instance: fuzz [name] finish.")
 
     def post(self):
-        pass
+        # POST /api/v1/namespaces/{namespace}/pods
+        print("pod instance: fuzz [name] start.")
+
+        with open("/Users/sundapeng/Project/kubernetes_fuzz_tool/fuzz_scripts/resource_metadata/fuzz_pod.json", 'r') as load_f:
+            body = json.load(load_f)
+
+        options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
+                                                     f"-z list,{self.namespace} " \
+                                                     f"-z file,{self.attack_file_path} " \
+                                                     f'-H "Content-Type:application/json" ' \
+                                                     f"-d {json.dumps(self.body, ensure_ascii=False).replace(' ', '')} " \
+                                                     f"--sc {self.fuzz_code_range} " \
+                                                     f"{self.connect_delay} " \
+                                                     f"{self.response_delay}",
+                                                     f"{self.kubernetes_base}{self.kubernetes_api_base}/v1/namespaces/FUZ2Z/pods?dryRun=True")
+
+        ResourceBase.api_caller(options)
+        print("pod instance: fuzz [name] finish.")
 
     def put(self):
         pass

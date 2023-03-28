@@ -13,6 +13,8 @@ import json
 import requests as requests
 import yaml
 from kubernetes_fuzz_tool.fuzz_scripts import base_dir
+from kubernetes_fuzz_tool.fuzz_scripts.fuzz_kubernetes_vars import FuzzVars
+from kubernetes_fuzz_tool.fuzz_scripts.resources.pod import Pod
 
 WFUZZ = "wfuzz"
 
@@ -27,7 +29,7 @@ def create_fuzz_resources(kubernetes_base: str, kubernetes_api_base: str):
 
 
 def create_fuzz_namespace(kubernetes_base: str, kubernetes_api_base: str):
-    with open(base_dir / "fuzz_scripts/resource_json/fuzz_namespace.json", 'r') as load_f:
+    with open(base_dir / "fuzz_scripts/resource_metadata/fuzz_namespace.json", 'r') as load_f:
         body = json.load(load_f)
     request_url = f"{kubernetes_base}{kubernetes_api_base}/v1/namespaces"
     header = {
@@ -50,6 +52,7 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     :param kubernetes_api_base:
     :return:
     """
+    metadata_path = base_dir / "fuzz_scripts/resource_metadata"
 
     # region pre handle: create fuzz namespace, create fuzz pods...
     create_fuzz_resources(kubernetes_base, kubernetes_api_base)
@@ -57,8 +60,25 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
 
     # region pod
     # region pod instance
+    # region pod instance POST
+    with open(metadata_path / "fuzz_pod.json", 'r') as load_f:
+        body = json.load(load_f)
+
+    pod = Pod(kubernetes_base=kubernetes_base,
+              kubernetes_api_base=kubernetes_api_base,
+              fuzz_configure=fuzz_configure,
+              namespace=FuzzVars.NAMESPACE,
+              body=body)
+    pod.post()
+    # endregion
+
     # region pod instance GET
     # GET /api/v1/namespaces/{namespace}/pods/{name}
+    # pod = Pod(kubernetes_base=kubernetes_base,
+    #           kubernetes_api_base=kubernetes_api_base,
+    #           fuzz_configure=fuzz_configure,
+    #           namespace=NAMESPACE)
+    # pod.get()
 
     # print("pod instance: fuzz [namespace, name, pretty] start.")
     # options = generate_fuzz_options("%s" % WFUZZ,
@@ -69,9 +89,6 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     # api_caller_entry(options)
     # print("pod instance: fuzz [namespace, name, pretty] finish.")
 
-    # endregion
-
-    # region pod instance post
     # endregion
 
     # region pod instance put
