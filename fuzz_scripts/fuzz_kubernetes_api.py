@@ -191,6 +191,9 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
 
     # region persistent volume
     # region persistent volume GET
+    fuzz_configure.update({
+        "FUZZ_HIDE_CODE_RANGE": [404]
+    })
     persistent_volume_fuzz_obj = PersistentVolume(kubernetes_base=kubernetes_base,
                                                   kubernetes_api_base=kubernetes_api_base,
                                                   fuzz_configure=fuzz_configure)
