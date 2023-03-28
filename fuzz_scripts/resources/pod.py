@@ -32,6 +32,7 @@ class Pod(ResourceBase):
         # GET /api/v1/namespaces/{namespace}/pods/{name}
         print("pod instance: get method fuzzing start.")
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
+                                                     f"-X GET " \
                                                      f'{" ".join(_ for _ in fuzz_payload)} ' \
                                                      f"--sc {self.fuzz_code_range} " \
                                                      f"--hc {self.fuzz_hide_code_range} " \
@@ -46,6 +47,7 @@ class Pod(ResourceBase):
         # POST /api/v1/namespaces/{namespace}/pods
         print("pod instance: post method fuzzing start.")
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
+                                                     f"-X POST " \
                                                      f'{" ".join(_ for _ in fuzz_payload)} ' \
                                                      f'-H Content-Type:application/json ' \
                                                      f"-d '{json.dumps(self.body, ensure_ascii=False).replace(' ', '')}' " \
@@ -63,6 +65,7 @@ class Pod(ResourceBase):
         # PUT /api/v1/namespaces/{namespace}/pods/{name}
         print("pod instance: put method fuzzing start.")
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
+                                                     f"-X PUT " \
                                                      f'{" ".join(_ for _ in fuzz_payload)} ' \
                                                      f'-H Content-Type:application/json ' \
                                                      f"-d '{json.dumps(self.body, ensure_ascii=False).replace(' ', '')}' " \
