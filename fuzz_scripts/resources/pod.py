@@ -14,6 +14,7 @@ from kubernetes_fuzz_tool.fuzz_scripts.resources.resource_base import ResourceBa
 
 BODY = "body"
 NAMESPACE = "namespace"
+POD_NAME = "name"
 
 
 class Pod(ResourceBase):
@@ -25,17 +26,18 @@ class Pod(ResourceBase):
         super().__init__(*args, **kwargs)
         self.namespace = kwargs.get("%s" % NAMESPACE)
         self.body = kwargs.get("%s" % BODY)
+        self.pod_name = kwargs.get("%s" % POD_NAME)
 
     def get(self):
         # GET /api/v1/namespaces/{namespace}/pods/{name}
         print("pod instance: get method fuzzing start.")
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
-                                                     f'-z list,"{self.namespace}" ' \
                                                      f"-z file,{self.attack_file_path} " \
                                                      f"--sc {self.fuzz_code_range} " \
-                                                     f"{self.connect_delay} " \
-                                                     f"{self.response_delay}",
-                                                     f"{self.kubernetes_base}{self.kubernetes_api_base}/v1/namespace/FUZZ/pods/FUZ2Z?pretty=true")
+                                                     f"--hc {self.fuzz_hide_code_range} " \
+                                                     f"--conn-delay {self.connect_delay} " \
+                                                     f"--req-delay {self.response_delay}",
+                                                     f"{self.kubernetes_base}{self.kubernetes_api_base}/v1/namespaces/{self.namespace}/pods/{self.pod_name}?pretty=FUZZ")
         ResourceBase.api_caller(options)
         print("pod instance: get method fuzzing finish.")
 

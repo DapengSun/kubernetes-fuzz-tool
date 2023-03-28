@@ -10,5 +10,4 @@ __author__ = 'sundapeng.sdp'
 
 class FuzzVars:
     NAMESPACE = "fuzz-dev"
-
-    FAKE_POD_NAME = "fake1-pod-1, fake2-pod-2"
+    POD_NAME = "fuzz-dev-pod"

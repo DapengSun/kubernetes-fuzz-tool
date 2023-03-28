@@ -89,14 +89,17 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
 
     # region pod
     # region pod instance
-
     # region pod instance GET
-    # GET /api/v1/namespaces/{namespace}/pods/{name}
-    # pod = Pod(kubernetes_base=kubernetes_base,
-    #           kubernetes_api_base=kubernetes_api_base,
-    #           fuzz_configure=fuzz_configure,
-    #           namespace=FuzzVars.NAMESPACE)
-    # pod.get()
+    fuzz_configure.update({
+        "FUZZ_HIDE_CODE_RANGE": [422]
+    })
+    pod = Pod(kubernetes_base=kubernetes_base,
+              kubernetes_api_base=kubernetes_api_base,
+              fuzz_configure=fuzz_configure,
+              attack_file_path=injection_file_path,
+              name=FuzzVars.POD_NAME,
+              namespace=FuzzVars.NAMESPACE)
+    pod.get()
 
     # print("pod instance: fuzz [namespace, name, pretty] start.")
     # options = generate_fuzz_options("%s" % WFUZZ,
