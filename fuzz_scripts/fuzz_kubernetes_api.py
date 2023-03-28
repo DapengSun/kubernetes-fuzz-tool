@@ -8,6 +8,7 @@
 """
 __author__ = 'sundapeng.sdp'
 
+import copy
 import json
 
 import requests as requests
@@ -128,15 +129,17 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     # endregion
 
     # region pod instance PUT
+    modify_pod_body = copy.deepcopy(pod_body)
+    modify_pod_body["metadata"]["name"] = FuzzVars.POD_NAME
     pod_fuzz_obj = Pod(kubernetes_base=kubernetes_base,
                        kubernetes_api_base=kubernetes_api_base,
                        fuzz_configure=fuzz_configure,
-                       body=pod_body)
+                       body=modify_pod_body)
     fuzz_payload = [
         f"-z file,{injection_file_path}",
         f"-z file,{injection_file_path}"
     ]
-    fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods/{FuzzVars.POD_NAME}?dryRun=True&fieldManager=FUZZ&fieldValidation=FUZ2Z&pretty=True"
+    fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods/{FuzzVars.POD_NAME}?dryRun=True&fieldManager=FUZ2Z&fieldValidation=FUZ3Z&pretty=True"
     pod_fuzz_obj.post(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
     fuzz_payload = [
         f"-z file,{injection_file_path}",

@@ -11,6 +11,7 @@ __author__ = 'sundapeng.sdp'
 import json
 
 from kubernetes_fuzz_tool.fuzz_scripts.resources.resource_base import ResourceBase
+from kubernetes_fuzz_tool.fuzz_scripts.resources.resource_base import exception_capture
 
 BODY = "body"
 NAMESPACE = "namespace"
@@ -26,6 +27,7 @@ class Pod(ResourceBase):
         super().__init__(*args, **kwargs)
         self.body = kwargs.get("%s" % BODY)
 
+    @exception_capture
     def get(self, fuzz_payload: list[str], fuzz_expression: str):
         # GET /api/v1/namespaces/{namespace}/pods/{name}
         print("pod instance: get method fuzzing start.")
@@ -39,6 +41,7 @@ class Pod(ResourceBase):
         ResourceBase.api_caller(options)
         print("pod instance: get method fuzzing finish.")
 
+    @exception_capture
     def post(self, fuzz_payload: list[str], fuzz_expression: str):
         # POST /api/v1/namespaces/{namespace}/pods
         print("pod instance: post method fuzzing start.")
@@ -55,6 +58,7 @@ class Pod(ResourceBase):
         ResourceBase.api_caller(options)
         print("pod instance: post method fuzzing finish.")
 
+    @exception_capture
     def put(self, fuzz_payload: list[str], fuzz_expression: str):
         # PUT /api/v1/namespaces/{namespace}/pods/{name}
         print("pod instance: put method fuzzing start.")
@@ -71,8 +75,10 @@ class Pod(ResourceBase):
         ResourceBase.api_caller(options)
         print("pod instance: put method fuzzing finish.")
 
+    @exception_capture
     def patch(self):
         pass
 
+    @exception_capture
     def delete(self):
         pass

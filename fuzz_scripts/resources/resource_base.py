@@ -10,6 +10,7 @@ __author__ = 'sundapeng.sdp'
 
 import abc
 from abc import ABC
+from functools import wraps
 from kubernetes_fuzz_tool.src import api_caller_entry
 
 
@@ -116,3 +117,13 @@ class ResourceBase(ABC):
     @property
     def fuzz_hide_code_range(self):
         return ",".join('%s' % _ for _ in self._fuzz_hide_code_range)
+
+def exception_capture(func):
+    @wraps(func)
+    def catch(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as ex:
+            if "Pycurl" in str(ex) and "Connection timed out" in str(ex):
+                print("pycurl connection timed out.")
+    return catch
