@@ -24,35 +24,33 @@ class Pod(ResourceBase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.namespace = kwargs.get("%s" % NAMESPACE)
         self.body = kwargs.get("%s" % BODY)
-        self.pod_name = kwargs.get("%s" % POD_NAME)
 
-    def get(self):
+    def get(self, fuzz_payload: list[str], fuzz_expression: str):
         # GET /api/v1/namespaces/{namespace}/pods/{name}
         print("pod instance: get method fuzzing start.")
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
-                                                     f"-z file,{self.attack_file_path} " \
+                                                     f'{" ".join(_ for _ in fuzz_payload)} ' \
                                                      f"--sc {self.fuzz_code_range} " \
                                                      f"--hc {self.fuzz_hide_code_range} " \
                                                      f"--conn-delay {self.connect_delay} " \
                                                      f"--req-delay {self.response_delay}",
-                                                     f"{self.kubernetes_base}{self.kubernetes_api_base}/v1/namespaces/{self.namespace}/pods/{self.pod_name}?pretty=FUZZ")
+                                                     f"{self.kubernetes_base}{self.kubernetes_api_base}{fuzz_expression}")
         ResourceBase.api_caller(options)
         print("pod instance: get method fuzzing finish.")
 
-    def post(self):
+    def post(self, fuzz_payload: list[str], fuzz_expression: str):
         # POST /api/v1/namespaces/{namespace}/pods
         print("pod instance: post method fuzzing start.")
         options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
-                                                     f"-z file,{self.attack_file_path} " \
+                                                     f'{" ".join(_ for _ in fuzz_payload)} ' \
                                                      f'-H Content-Type:application/json ' \
                                                      f"-d '{json.dumps(self.body, ensure_ascii=False).replace(' ', '')}' " \
                                                      f"--sc {self.fuzz_code_range} " \
                                                      f"--hc {self.fuzz_hide_code_range} " \
                                                      f"--conn-delay {self.connect_delay} " \
                                                      f"--req-delay {self.response_delay}",
-                                                     f"{self.kubernetes_base}{self.kubernetes_api_base}/v1/namespaces/{self.namespace}/pods?dryRun=True")
+                                                     f"{self.kubernetes_base}{self.kubernetes_api_base}{fuzz_expression}")
 
         ResourceBase.api_caller(options)
         print("pod instance: post method fuzzing finish.")

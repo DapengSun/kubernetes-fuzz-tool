@@ -40,19 +40,19 @@ class ResourceBase(ABC):
         self._fuzz_hide_code_range = self._fuzz_configure.get(FUZZ_HIDE_CODE_RANGE_NAME)
 
     @abc.abstractmethod
-    def get(self):
+    def get(self, fuzz_payload: list[str], fuzz_expression: str):
         pass
 
     @abc.abstractmethod
-    def post(self):
+    def post(self, fuzz_payload: list[str], fuzz_expression: str):
         pass
 
     @abc.abstractmethod
-    def put(self):
+    def put(self, fuzz_payload: list[str], fuzz_expression: str):
         pass
 
     @abc.abstractmethod
-    def patch(self):
+    def patch(self, fuzz_payload: list[str], fuzz_expression: str):
         pass
 
     @abc.abstractmethod

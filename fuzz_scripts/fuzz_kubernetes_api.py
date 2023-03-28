@@ -95,14 +95,17 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     })
     pod_fuzz_obj = Pod(kubernetes_base=kubernetes_base,
                        kubernetes_api_base=kubernetes_api_base,
-                       fuzz_configure=fuzz_configure,
-                       name=FuzzVars.POD_NAME,
-                       namespace=FuzzVars.NAMESPACE)
-    pod_fuzz_obj.attack_file_path = injection_file_path
-    pod_fuzz_obj.get()
+                       fuzz_configure=fuzz_configure)
+    fuzz_payload = [
+        f"-z file,{injection_file_path}"
+    ]
+    fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods/{FuzzVars.POD_NAME}?pretty=FUZZ"
+    pod_fuzz_obj.get(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
 
-    pod_fuzz_obj.attack_file_path = general_file_path
-    pod_fuzz_obj.get()
+    fuzz_payload = [
+        f"-z file,{general_file_path}"
+    ]
+    pod_fuzz_obj.get(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
     # endregion
 
     # region pod instance POST
@@ -115,13 +118,17 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     pod_fuzz_obj = Pod(kubernetes_base=kubernetes_base,
                        kubernetes_api_base=kubernetes_api_base,
                        fuzz_configure=fuzz_configure,
-                       namespace=FuzzVars.NAMESPACE,
                        body=body)
-    pod_fuzz_obj.attack_file_path = injection_file_path
-    pod_fuzz_obj.post()
+    fuzz_payload = [
+        f"-z file,{injection_file_path}"
+    ]
+    fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods?dryRun=True"
+    pod_fuzz_obj.post(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
 
-    pod_fuzz_obj.attack_file_path = general_file_path
-    pod_fuzz_obj.post()
+    fuzz_payload = [
+        f"-z file,{general_file_path}"
+    ]
+    pod_fuzz_obj.post(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
     # endregion
 
     # region pod instance put
