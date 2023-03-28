@@ -48,8 +48,8 @@ class Pod(ResourceBase):
                                                      f"-d '{json.dumps(self.body, ensure_ascii=False).replace(' ', '')}' " \
                                                      f"--sc {self.fuzz_code_range} " \
                                                      f"--hc {self.fuzz_hide_code_range} " \
-                                                     f"{self.connect_delay} " \
-                                                     f"{self.response_delay}",
+                                                     f"--conn-delay {self.connect_delay} " \
+                                                     f"--req-delay {self.response_delay}",
                                                      f"{self.kubernetes_base}{self.kubernetes_api_base}/v1/namespaces/{self.namespace}/pods?dryRun=True")
 
         ResourceBase.api_caller(options)

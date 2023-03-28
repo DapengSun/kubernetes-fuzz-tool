@@ -64,28 +64,6 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
 
     # region pod
     # region pod instance
-    # region pod instance POST
-    with open(metadata_path / "fuzz_pod.json", 'r') as load_f:
-        body = json.load(load_f)
-
-
-    pod_fuzz_injections = Pod(kubernetes_base=kubernetes_base,
-                              kubernetes_api_base=kubernetes_api_base,
-                              fuzz_configure=fuzz_configure,
-                              attack_file_path=injection_file_path,
-                              namespace=FuzzVars.NAMESPACE,
-                              body=body)
-    pod_fuzz_injections.post()
-
-    pod_fuzz_general = Pod(kubernetes_base=kubernetes_base,
-                           kubernetes_api_base=kubernetes_api_base,
-                           fuzz_configure=fuzz_configure,
-                           attack_file_path=general_file_path,
-                           namespace=FuzzVars.NAMESPACE,
-                           body=body)
-    pod_fuzz_general.post()
-    # endregion
-
     # region pod instance GET
     # GET /api/v1/namespaces/{namespace}/pods/{name}
     # pod = Pod(kubernetes_base=kubernetes_base,
@@ -103,6 +81,30 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     # api_caller_entry(options)
     # print("pod instance: fuzz [namespace, name, pretty] finish.")
 
+    # endregion
+
+    # region pod instance POST
+    with open(metadata_path / "fuzz_pod.json", 'r') as load_f:
+        body = json.load(load_f)
+
+    fuzz_configure.update({
+        "FUZZ_HIDE_CODE_RANGE": [422]
+    })
+    pod_fuzz_injections = Pod(kubernetes_base=kubernetes_base,
+                              kubernetes_api_base=kubernetes_api_base,
+                              fuzz_configure=fuzz_configure,
+                              attack_file_path=injection_file_path,
+                              namespace=FuzzVars.NAMESPACE,
+                              body=body)
+    pod_fuzz_injections.post()
+
+    pod_fuzz_general = Pod(kubernetes_base=kubernetes_base,
+                           kubernetes_api_base=kubernetes_api_base,
+                           fuzz_configure=fuzz_configure,
+                           attack_file_path=general_file_path,
+                           namespace=FuzzVars.NAMESPACE,
+                           body=body)
+    pod_fuzz_general.post()
     # endregion
 
     # region pod instance put
