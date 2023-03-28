@@ -105,6 +105,10 @@ class ResourceBase(ABC):
     def attack_file_path(self):
         return self._attack_file_path
 
+    @attack_file_path.setter
+    def attack_file_path(self, value):
+        self._attack_file_path = value
+
     @property
     def fuzz_code_range(self):
         return ",".join('%s' % _ for _ in self._fuzz_code_range)

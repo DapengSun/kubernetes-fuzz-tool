@@ -93,23 +93,16 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     fuzz_configure.update({
         "FUZZ_HIDE_CODE_RANGE": [422]
     })
-    pod = Pod(kubernetes_base=kubernetes_base,
-              kubernetes_api_base=kubernetes_api_base,
-              fuzz_configure=fuzz_configure,
-              attack_file_path=injection_file_path,
-              name=FuzzVars.POD_NAME,
-              namespace=FuzzVars.NAMESPACE)
-    pod.get()
+    pod_fuzz_obj = Pod(kubernetes_base=kubernetes_base,
+                       kubernetes_api_base=kubernetes_api_base,
+                       fuzz_configure=fuzz_configure,
+                       name=FuzzVars.POD_NAME,
+                       namespace=FuzzVars.NAMESPACE)
+    pod_fuzz_obj.attack_file_path = injection_file_path
+    pod_fuzz_obj.get()
 
-    # print("pod instance: fuzz [namespace, name, pretty] start.")
-    # options = generate_fuzz_options("%s" % WFUZZ,
-    #                                 f"-z list,{FuzzVars.NAMESPACE} " \
-    #                                 f"-z list,{FuzzVars.FAKE_POD_NAME} " \
-    #                                 f"--sc {FUZZ_CODE_RANGE}",
-    #                                 f"{kubernetes_base}{kubernetes_api_base}/v1/namespace/FUZZ/pods/FUZ2Z?pretty=FUZ3Z")
-    # api_caller_entry(options)
-    # print("pod instance: fuzz [namespace, name, pretty] finish.")
-
+    pod_fuzz_obj.attack_file_path = general_file_path,
+    pod_fuzz_obj.get()
     # endregion
 
     # region pod instance POST
@@ -119,21 +112,16 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     fuzz_configure.update({
         "FUZZ_HIDE_CODE_RANGE": [422]
     })
-    pod_fuzz_injections = Pod(kubernetes_base=kubernetes_base,
-                              kubernetes_api_base=kubernetes_api_base,
-                              fuzz_configure=fuzz_configure,
-                              attack_file_path=injection_file_path,
-                              namespace=FuzzVars.NAMESPACE,
-                              body=body)
-    pod_fuzz_injections.post()
+    pod_fuzz_obj = Pod(kubernetes_base=kubernetes_base,
+                       kubernetes_api_base=kubernetes_api_base,
+                       fuzz_configure=fuzz_configure,
+                       namespace=FuzzVars.NAMESPACE,
+                       body=body)
+    pod_fuzz_obj.attack_file_path = injection_file_path
+    pod_fuzz_obj.post()
 
-    pod_fuzz_general = Pod(kubernetes_base=kubernetes_base,
-                           kubernetes_api_base=kubernetes_api_base,
-                           fuzz_configure=fuzz_configure,
-                           attack_file_path=general_file_path,
-                           namespace=FuzzVars.NAMESPACE,
-                           body=body)
-    pod_fuzz_general.post()
+    pod_fuzz_obj.attack_file_path = general_file_path,
+    pod_fuzz_obj.post()
     # endregion
 
     # region pod instance put
