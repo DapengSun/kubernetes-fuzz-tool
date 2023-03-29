@@ -81,7 +81,6 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     :param kubernetes_api_base: kubernetes api base url path
     :return:
     """
-    actual_metadata_path = base_dir / "fuzz_scripts/resource_metadata/actual_metadata"
     fuzz_metadata_path = base_dir / "fuzz_scripts/resource_metadata/fuzz_metadata"
     injection_file_path = base_dir / "src/words/wordlist/Injections/All_attack.txt"
     general_file_path = base_dir / "src/words/wordlist/general/big.txt"
@@ -222,28 +221,39 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     ]
     fuzz_expression = f"/v1/persistentvolumes/fake-pv-name"
 
+    # fuzz apiVersion
     modify_body = copy.deepcopy(pv_body)
     modify_body["apiVersion"] = "FUZZ"
     persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
 
+    # fuzz kind
     modify_body = copy.deepcopy(pv_body)
     modify_body["kind"] = "FUZZ"
     persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
 
+    # fuzz gracePeriodSeconds
     modify_body = copy.deepcopy(pv_body)
     modify_body["gracePeriodSeconds"] = "FUZZ"
     persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
 
+    # fuzz orphanDependents
     modify_body = copy.deepcopy(pv_body)
     modify_body["orphanDependents"] = "FUZZ"
     persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
 
+    # fuzz preconditions
     modify_body = copy.deepcopy(pv_body)
     modify_body["preconditions"] = "FUZZ"
     persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
 
+    # fuzz propagationPolicy
     modify_body = copy.deepcopy(pv_body)
     modify_body["propagationPolicy"] = "FUZZ"
+    persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
+
+    # fuzz dryRun
+    modify_body = copy.deepcopy(pv_body)
+    modify_body["dryRun"] = "FUZZ"
     persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
     # endregion
 

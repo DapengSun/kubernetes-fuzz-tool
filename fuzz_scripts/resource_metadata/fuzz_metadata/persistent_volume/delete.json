@@ -6,5 +6,8 @@
   "preconditions": {
     "resourceVersion": "v1"
   },
-  "propagationPolicy": "randomString"
+  "propagationPolicy": "randomString",
+  "dryRun": [
+    "All"
+  ]
 }
