@@ -84,6 +84,22 @@ class PersistentVolume(ResourceBase):
         pass
 
     @exception_capture
-    def delete(self):
+    def delete(self, fuzz_payload: list[str], fuzz_expression: str, body: dict = None):
+        if body is not None:
+            self.body = body
+
         # DELETE /api/v1/persistentvolumes/{name}
-        pass
+        print("persistent volume: delete method fuzzing start.")
+        options = ResourceBase.generate_fuzz_options("%s" % self.wfuzz,
+                                                     f"-X DELETE " \
+                                                     f'{" ".join(_ for _ in fuzz_payload)} ' \
+                                                     f'-H Content-Type:application/json ' \
+                                                     f"-d '{json.dumps(self.body, ensure_ascii=False).replace(' ', '')}' " \
+                                                     f"--sc {self.fuzz_code_range} " \
+                                                     f"--hc {self.fuzz_hide_code_range} " \
+                                                     f"--conn-delay {self.connect_delay} " \
+                                                     f"--req-delay {self.response_delay}",
+                                                     f"{self.kubernetes_base}{self.kubernetes_api_base}{fuzz_expression}")
+
+        ResourceBase.api_caller(options)
+        print("persistent volume: delete method fuzzing finish.")

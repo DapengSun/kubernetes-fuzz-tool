@@ -86,16 +86,16 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     injection_file_path = base_dir / "src/words/wordlist/Injections/All_attack.txt"
     general_file_path = base_dir / "src/words/wordlist/general/big.txt"
 
-    pod_body = dict()
-    with open(fuzz_metadata_path / "pod.json", 'r') as load_f:
-        pod_body = json.load(load_f)
-
     # region inti resources: create fuzz namespace, create fuzz pods...
     initialize_resources(kubernetes_base, kubernetes_api_base)
     # endregion
 
     # region pod
     # region pod instance
+    pod_body = dict()
+    with open(fuzz_metadata_path / "pod.json", 'r') as load_f:
+        pod_body = json.load(load_f)
+
     # region pod instance GET
     fuzz_configure.update({
         "FUZZ_HIDE_CODE_RANGE": [422]
@@ -190,6 +190,10 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     # endregion
 
     # region persistent volume
+    pv_body = dict()
+    with open(fuzz_metadata_path / "persistent_volume/delete.json", 'r') as load_f:
+        pv_body = json.load(load_f)
+
     # region persistent volume GET
     fuzz_configure.update({
         "FUZZ_HIDE_CODE_RANGE": [404]
@@ -202,6 +206,45 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     ]
     fuzz_expression = f"/v1/persistentvolumes/FUZZ"
     persistent_volume_fuzz_obj.get(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
+    # endregion
+
+    # region persistent volume DELETE
+    fuzz_configure.update({
+        "FUZZ_HIDE_CODE_RANGE": [404]
+    })
+    modify_body = copy.deepcopy(pv_body)
+    persistent_volume_fuzz_obj = PersistentVolume(kubernetes_base=kubernetes_base,
+                                                  kubernetes_api_base=kubernetes_api_base,
+                                                  fuzz_configure=fuzz_configure,
+                                                  body=pv_body)
+    fuzz_payload = [
+        f"-z file,{injection_file_path}"
+    ]
+    fuzz_expression = f"/v1/persistentvolumes/fake-pv-name"
+
+    modify_body = copy.deepcopy(pv_body)
+    modify_body["apiVersion"] = "FUZZ"
+    persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
+
+    modify_body = copy.deepcopy(pv_body)
+    modify_body["kind"] = "FUZZ"
+    persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
+
+    modify_body = copy.deepcopy(pv_body)
+    modify_body["gracePeriodSeconds"] = "FUZZ"
+    persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
+
+    modify_body = copy.deepcopy(pv_body)
+    modify_body["orphanDependents"] = "FUZZ"
+    persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
+
+    modify_body = copy.deepcopy(pv_body)
+    modify_body["preconditions"] = "FUZZ"
+    persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
+
+    modify_body = copy.deepcopy(pv_body)
+    modify_body["propagationPolicy"] = "FUZZ"
+    persistent_volume_fuzz_obj.delete(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression, body=modify_body)
     # endregion
 
     # endregion

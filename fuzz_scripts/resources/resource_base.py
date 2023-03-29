@@ -84,11 +84,11 @@ class ResourceBase(ABC):
 
     @property
     def connect_delay(self):
-        return "5"
+        return "1"
 
     @property
     def response_delay(self):
-        return "5"
+        return "1"
 
     @property
     def kubernetes_base(self):
