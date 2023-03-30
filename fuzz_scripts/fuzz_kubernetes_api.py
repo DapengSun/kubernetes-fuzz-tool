@@ -123,12 +123,10 @@ def kubernetes_api_fuzz(kubernetes_base: str, kubernetes_api_base: str, fuzz_con
     ]
     fuzz_expression = f"/v1/namespaces/{FuzzVars.NAMESPACE}/pods?dryRun=All"
     pod_fuzz_obj.post(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
-    fuzz_payload = [
-        f"-z file,{general_file_path}"
-    ]
-    pod_fuzz_obj.post(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
-
-
+    # fuzz_payload = [
+    #     f"-z file,{general_file_path}"
+    # ]
+    # pod_fuzz_obj.post(fuzz_payload=fuzz_payload, fuzz_expression=fuzz_expression)
 
     # endregion
 
