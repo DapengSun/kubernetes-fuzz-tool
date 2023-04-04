@@ -70,9 +70,10 @@ if __name__ == '__main__':
         pod_metadata_path = base_dir / "fuzz_scripts/resource_metadata/actual_metadata/pod.json"
         with open(pod_metadata_path, 'r') as load_f:
             body = json.load(load_f)
-        print('\r\n')
         try:
             response = requests.post("http://192.168.75.100:8080/api/v1/namespaces/fuzz-dev/pods", headers=fuzz_header, json=body, timeout=2)
+            if response.status_code == 409:
+                continue
             print('**************************************')
             print(f'header: {fuzz_header}')
             print(f'body: {body}')
