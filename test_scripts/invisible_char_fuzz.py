@@ -13,6 +13,7 @@ import json
 from time import sleep
 
 import requests
+import yaml
 
 from fuzz_scripts import base_dir
 
@@ -70,9 +71,13 @@ if __name__ == '__main__':
         pod_metadata_path = base_dir / "fuzz_scripts/resource_metadata/actual_metadata/pod.json"
         with open(pod_metadata_path, 'r') as load_f:
             body = json.load(load_f)
+
+        fuzz_config = base_dir / "fuzz_config.yaml"
+        with open(fuzz_config) as f:
+            fuzz_configure = yaml.load(f, Loader=yaml.FullLoader)
         try:
             response = requests.post("http://192.168.75.100:8080/api/v1/namespaces/fuzz-dev/pods", headers=fuzz_header, json=body, timeout=2)
-            if response.status_code in [400, 409, 415]:
+            if response.status_code in fuzz_configure.get("FUZZ_HIDE_CODE_RANGE"):
                 continue
             print('**************************************')
             print(f'header: {fuzz_header}')
