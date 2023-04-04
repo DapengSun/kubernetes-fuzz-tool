@@ -93,6 +93,12 @@ if __name__ == '__main__':
             print('**************************************')
             print('\r\n')
         except Exception as ex:
+            print('**************************************')
+            print(f'header: {fuzz_header}')
+            print(f'body: {body}')
+            print(ex)
+            print('**************************************')
+            print('\r\n')
             continue
 
 
