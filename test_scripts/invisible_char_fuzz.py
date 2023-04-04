@@ -72,7 +72,7 @@ if __name__ == '__main__':
             body = json.load(load_f)
         try:
             response = requests.post("http://192.168.75.100:8080/api/v1/namespaces/fuzz-dev/pods", headers=fuzz_header, json=body, timeout=2)
-            if response.status_code == 409:
+            if response.status_code in [400, 409, 415]:
                 continue
             print('**************************************')
             print(f'header: {fuzz_header}')
@@ -88,11 +88,6 @@ if __name__ == '__main__':
             print('**************************************')
             print('\r\n')
         except Exception as ex:
-            print('**************************************')
-            print(f'header: {fuzz_header}')
-            print(f'body: {body}')
-            print(ex)
-            print('**************************************')
             continue
 
 
