@@ -73,20 +73,19 @@ if __name__ == '__main__':
         print('\r\n')
         try:
             response = requests.post("http://192.168.75.100:8080/api/v1/namespaces/fuzz-dev/pods", headers=fuzz_header, json=body, timeout=2)
-            if response.status_code != 409:
-                print('**************************************')
-                print(f'header: {fuzz_header}')
-                print(f'body: {body}')
-                # 查看响应状态码
-                print(response.status_code)
-                # 查看响应头部字符编码
-                print(response.encoding)
-                # 查看完整url地址
-                print(response.url)
-                # 查看响应内容，response.text 返回的是Unicode格式的数据
-                print(response.text)
-                print('**************************************')
-                print('\r\n')
+            print('**************************************')
+            print(f'header: {fuzz_header}')
+            print(f'body: {body}')
+            # 查看响应状态码
+            print(response.status_code)
+            # 查看响应头部字符编码
+            print(response.encoding)
+            # 查看完整url地址
+            print(response.url)
+            # 查看响应内容，response.text 返回的是Unicode格式的数据
+            print(response.text)
+            print('**************************************')
+            print('\r\n')
         except Exception as ex:
             print('**************************************')
             print(f'header: {fuzz_header}')
