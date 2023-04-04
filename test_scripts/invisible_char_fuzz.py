@@ -90,6 +90,7 @@ if __name__ == '__main__':
             print(response.url)
             # 查看响应内容，response.text 返回的是Unicode格式的数据
             print(response.text)
+            sleep(1)
             print('**************************************')
             print('\r\n')
         except Exception as ex:
